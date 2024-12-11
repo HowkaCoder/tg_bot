@@ -7,7 +7,7 @@ import sqlite3
 import logging
 
 # Инициализация бота и логгера
-API_TOKEN = 'YOUR_TELEGRAM_BOT_TOKEN'
+API_TOKEN = '7581719295:AAF-cZYSr7Eq-kzLOXchB5Cms2fhycC2aO8'
 bot = Bot(token=API_TOKEN)
 dp = Dispatcher()
 logging.basicConfig(level=logging.INFO)
