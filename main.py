@@ -1,13 +1,15 @@
 from aiogram import Bot, Dispatcher, types
 from aiogram.enums import ParseMode
-from aiogram.utils import executor
+from aiogram.filters import Command
+from aiogram.types import Message
+import asyncio
 import sqlite3
 import logging
 
 # Инициализация бота и логгера
-API_TOKEN = '7733006017:AAGN1mgm6y1Rg58YoWn-tea6SL1giKZM6SI'
+API_TOKEN = 'YOUR_TELEGRAM_BOT_TOKEN'
 bot = Bot(token=API_TOKEN)
-dp = Dispatcher(bot)
+dp = Dispatcher()
 logging.basicConfig(level=logging.INFO)
 
 # Инициализация базы данных
@@ -34,8 +36,8 @@ admin_mode = False
 current_questions = {}
 
 # Команда /start
-@dp.message_handler(commands=['start'])
-async def start_handler(message: types.Message):
+@dp.message(Command("start"))
+async def start_handler(message: Message):
     user_id = message.from_user.id
     cursor.execute("SELECT * FROM questions")
     questions = cursor.fetchall()
@@ -65,8 +67,8 @@ async def ask_next_question(message):
         await message.answer("Спасибо за ответы!")
 
 # Обработка текста
-@dp.message_handler()
-async def handle_text(message: types.Message):
+@dp.message()
+async def handle_text(message: Message):
     global admin_mode
 
     if admin_mode and message.text.lower() == "cancel_admin_sage_mode":
@@ -109,5 +111,10 @@ async def handle_text(message: types.Message):
     else:
         await message.answer("Неизвестная команда или завершены ответы на вопросы.")
 
+async def main():
+    dp.include_router(dp)
+    await bot.delete_webhook(drop_pending_updates=True)
+    await dp.start_polling(bot)
+
 if __name__ == "__main__":
-    executor.start_polling(dp, skip_updates=True)
+    asyncio.run(main())
